@@ -1,0 +1,6 @@
+parameters:
+	ignoreErrors:
+		- '#n method "ReactParallel\\Psr15Adapter\\ReactMiddleware::__invoke", caught "Throwable" must be rethrown.#'
+
+includes:
+	- vendor/wyrihaximus/async-test-utilities/rules.neon

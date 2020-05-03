@@ -1,0 +1,20 @@
+{
+  "symbol-whitelist" : [
+    "null", "true", "false",
+    "static", "self", "parent",
+    "array", "string", "int", "float", "bool", "iterable", "callable", "void", "object",
+    "WyriHaximus\\Constants\\ComposerAutoloader\\LOCATION", "Psr\\Http\\Message\\ResponseInterface",
+    "Psr\\Http\\Message\\ServerRequestInterface", "Psr\\Http\\Server\\RequestHandlerInterface",
+    "ReactParallel\\Contracts\\PoolInterface", "WyriHaximus\\Constants\\Numeric\\ZERO"
+  ],
+  "php-core-extensions" : [
+    "Core",
+    "date",
+    "pcre",
+    "Phar",
+    "Reflection",
+    "SPL",
+    "standard"
+  ],
+  "scan-files" : []
+}
