@@ -28,9 +28,10 @@ final class ReactMiddlewareTest extends AsyncTestCase
     {
         $rnd = bin2hex(random_bytes(1024));
         $loop = Factory::create();
-        $pool = new Infinite($loop, 10);
+        $eventLoopBridge = new EventLoopBridge($loop);
+        $pool = new Infinite($loop, $eventLoopBridge, 10);
         $stub = new Psr15MiddlewareStub();
-        $middleware = new ReactMiddleware(new StreamFactory(new EventLoopBridge($loop)), $pool, $stub);
+        $middleware = new ReactMiddleware(new StreamFactory($eventLoopBridge), $pool, $stub);
         $request = new ServerRequest('GET', 'https://example.com/');
         $request = $request->withAttribute('body', $rnd);
 
