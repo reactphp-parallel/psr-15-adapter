@@ -25,11 +25,12 @@ The middleware adapter accepts any PSR-15 middleware instance that meets for fol
 ```php
 $loop = Factory::create();
 $pool = new Infinite($loop, 10);
-$streamFactory = new StreamFactory(new EventLoopBridge($loop));
+$eventLoopBridge = new EventLoopBridge($loop);
+$streamFactory = new StreamFactory($eventLoopBridge);
 $psr15Middleware = new ThePsr15MiddlewareOfYourChoice();
 $server = new React\Http\Server(
     $loop,
-    new ReactMiddleware($streamFactory, $pool, $psr15Middleware)
+    new ReactMiddleware($streamFactory, $pool, $psr15Middleware, $loop, $eventLoopBridge)
 );
 ```
 

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ReactParallel\Psr15Adapter;
 
@@ -6,6 +8,7 @@ use parallel\Channel;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+
 use function Opis\Closure\serialize;
 use function Opis\Closure\unserialize;
 

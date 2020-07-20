@@ -1,6 +1,7 @@
 parameters:
 	ignoreErrors:
-		- '#n method "ReactParallel\\Psr15Adapter\\ReactMiddleware::__invoke", caught "Throwable" must be rethrown.#'
+		- '#Call to an undefined method React\\Promise\\PromiseInterface::always\(\).#'
+		- '#Parameter \#1 \$it of function iterator_to_array expects Traversable, iterable\<string, int\> given.#'
 
 includes:
 	- vendor/wyrihaximus/async-test-utilities/rules.neon

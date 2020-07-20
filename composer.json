@@ -15,10 +15,12 @@
         "ancarda/psr7-string-stream": "^1.3",
         "opis/closure": "^3.5",
         "psr/http-server-middleware": "^1.0",
+        "react-parallel/contracts": "^1.0",
         "react-parallel/event-loop": "^1.0",
         "react-parallel/infinite-pool": "^2.0",
         "react-parallel/runtime": "^2.0",
         "react-parallel/streams": "dev-master",
+        "react-parallel/worker-pool": "dev-master",
         "react/event-loop": "^1.1",
         "react/http": "^0.8.6",
         "react/promise": "^2.7",
@@ -29,13 +31,14 @@
     "require-dev": {
         "moneyphp/money": "^3.2 || ^3.2.1",
         "ocramius/package-versions": "^1.4",
+        "ringcentral/psr7": "^1.3",
         "thecodingmachine/safe": "^1.1",
-        "wyrihaximus/async-test-utilities": "^2.0",
+        "wyrihaximus/async-test-utilities": "^2.2",
         "wyrihaximus/iterator-or-array-to-array": "^1.1"
     },
     "config": {
         "platform": {
-            "php": "7.4"
+            "php": "7.4.7"
         },
         "sort-packages": true
     },
