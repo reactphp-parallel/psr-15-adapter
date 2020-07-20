@@ -347,16 +347,16 @@
         },
         {
             "name": "react-parallel/event-loop",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp-parallel/event-loop.git",
-                "reference": "ecf56448f4cadfce69791e97120a8766ff669f2d"
+                "reference": "5070e4eb25393d8ada563639b0a1a515f824eb54"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp-parallel/event-loop/zipball/ecf56448f4cadfce69791e97120a8766ff669f2d",
-                "reference": "ecf56448f4cadfce69791e97120a8766ff669f2d",
+                "url": "https://api.github.com/repos/reactphp-parallel/event-loop/zipball/5070e4eb25393d8ada563639b0a1a515f824eb54",
+                "reference": "5070e4eb25393d8ada563639b0a1a515f824eb54",
                 "shasum": ""
             },
             "require": {
@@ -399,7 +399,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-07-06T07:53:11+00:00"
+            "time": "2020-07-07T16:41:12+00:00"
         },
         {
             "name": "react-parallel/infinite-pool",
