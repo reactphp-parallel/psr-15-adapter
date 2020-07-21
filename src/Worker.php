@@ -8,13 +8,15 @@ use Psr\Http\Server\MiddlewareInterface;
 use ReactParallel\Pool\Worker\Work;
 use ReactParallel\Pool\Worker\Work\Worker as WorkerContract;
 
+use function array_reverse;
 use function assert;
 
 final class Worker implements WorkerContract
 {
-    private MiddlewareInterface $middleware;
+    /** @var MiddlewareInterface[] */
+    private array $middleware;
 
-    public function __construct(MiddlewareInterface $middleware)
+    public function __construct(MiddlewareInterface ...$middleware)
     {
         $this->middleware = $middleware;
     }
@@ -27,6 +29,11 @@ final class Worker implements WorkerContract
         $input   = $work->input();
         $output  = $work->output();
 
-        return new Response($this->middleware->process($request, new Psr15RequestHandlerAdapter($input, $output)));
+        $requestHandler = new Psr15RequestHandlerAdapter($input, $output);
+        foreach (array_reverse($this->middleware) as $middleware) {
+            $requestHandler = new Next($middleware, $requestHandler);
+        }
+
+        return new Response($requestHandler->handle($request));
     }
 }

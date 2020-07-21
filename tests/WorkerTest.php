@@ -13,6 +13,7 @@ use ReactParallel\Psr15Adapter\WorkerFactory;
 use WyriHaximus\AsyncTestUtilities\AsyncTestCase;
 
 use function assert;
+use function implode;
 
 /**
  * @internal
@@ -24,11 +25,16 @@ final class WorkerTest extends AsyncTestCase
      */
     public function handle(): void
     {
-        $channel  = new Channel(Channel::Infinite);
-        $request  = $this->prophesize(ServerRequestInterface::class)->reveal();
-        $stub     = new ResponseMiddlewareStub();
-        $response = (new WorkerFactory($stub))->construct()->perform(new Work(new Request($request, $channel, $channel)));
+        $channel                = new Channel(Channel::Infinite);
+        $request                = $this->prophesize(ServerRequestInterface::class)->reveal();
+        $responseMiddlewareStub = new ResponseMiddlewareStub();
+        $stub                   = new Psr15MiddlewareStub();
+        $response               = (new WorkerFactory($stub, $stub, $responseMiddlewareStub))->construct()->perform(new Work(new Request($request, $channel, $channel)));
         assert($response instanceof Response);
         self::assertSame(200, $response->result()->getStatusCode());
+        self::assertSame(
+            implode(', ', [ResponseMiddlewareStub::class, Psr15MiddlewareStub::class, Psr15MiddlewareStub::class]),
+            $response->result()->getHeaderLine('__CLASS__')
+        );
     }
 }
