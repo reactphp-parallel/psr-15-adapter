@@ -15,13 +15,13 @@ final class WorkerFactory implements WorkerFactoryContract
 {
     private string $middleware;
 
-    public function __construct(MiddlewareInterface $middleware)
+    public function __construct(MiddlewareInterface ...$middleware)
     {
         $this->middleware = serialize($middleware);
     }
 
     public function construct(): WorkerContract
     {
-        return new Worker(unserialize($this->middleware));
+        return new Worker(...unserialize($this->middleware));
     }
 }

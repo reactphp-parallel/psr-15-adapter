@@ -26,11 +26,11 @@ final class ReactMiddleware
     private WorkerPool $workerPool;
 
     public function __construct(
+        LoopInterface $loop,
+        EventLoopBridge $eventLoopBridge,
         Factory $streamFactory,
         LowLevelPoolInterface $pool,
-        MiddlewareInterface $middleware,
-        LoopInterface $loop,
-        EventLoopBridge $eventLoopBridge
+        MiddlewareInterface ...$middleware
     ) {
         $this->streamFactory = $streamFactory;
         $this->workerPool    = new WorkerPool(
@@ -38,7 +38,7 @@ final class ReactMiddleware
             $eventLoopBridge,
             $pool,
             new WorkerFactory(
-                $middleware
+                ...$middleware
             ),
             (int) '13'
         );

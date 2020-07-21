@@ -20,6 +20,7 @@ use WyriHaximus\PoolInfo\Info;
 
 use function assert;
 use function bin2hex;
+use function implode;
 use function iterator_to_array;
 use function random_bytes;
 use function React\Promise\resolve;
@@ -39,7 +40,8 @@ final class ReactMiddlewareTest extends AsyncTestCase
         $eventLoopBridge = new EventLoopBridge($loop);
         $pool            = new Infinite($loop, $eventLoopBridge, 10);
         $stub            = new Psr15MiddlewareStub();
-        $middleware      = new ReactMiddleware(new StreamFactory($eventLoopBridge), $pool, $stub, $loop, $eventLoopBridge);
+        $anotherStub     = new AnotherPsr15MiddlewareStub();
+        $middleware      = new ReactMiddleware($loop, $eventLoopBridge, new StreamFactory($eventLoopBridge), $pool, $stub, $stub, $anotherStub);
         $request         = new ServerRequest('GET', 'https://example.com/');
         $request         = $request->withAttribute('body', $rnd);
 
@@ -66,7 +68,7 @@ final class ReactMiddlewareTest extends AsyncTestCase
             Info::SIZE  => 1,
         ], iterator_to_array($pool->info()));
 
-        $response = $this->await($promise, $loop, 3.3);
+        $response = $this->await($promise, $loop, 9.9);
         assert($response instanceof ResponseInterface);
 
         self::assertSame([
@@ -79,7 +81,10 @@ final class ReactMiddlewareTest extends AsyncTestCase
 
         self::assertSame(666, $response->getStatusCode());
         self::assertSame($rnd, $response->getBody()->getContents());
-        self::assertSame(Psr15MiddlewareStub::class, $response->getHeaderLine('__CLASS__'));
+        self::assertSame(
+            implode(', ', [AnotherPsr15MiddlewareStub::class, Psr15MiddlewareStub::class, Psr15MiddlewareStub::class]),
+            $response->getHeaderLine('__CLASS__')
+        );
 
         $middleware->__destruct();
 
