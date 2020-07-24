@@ -10,14 +10,14 @@ use Psr\Http\Message\ServerRequestInterface;
 final class Request
 {
     private ServerRequestInterface $request;
-    private Channel $input;
-    private Channel $output;
+    private string $input;
+    private string $output;
 
     public function __construct(ServerRequestInterface $request, Channel $input, Channel $output)
     {
         $this->request = $request;
-        $this->input   = $input;
-        $this->output  = $output;
+        $this->input   = (string) $input;
+        $this->output  = (string) $output;
     }
 
     public function request(): ServerRequestInterface
@@ -27,11 +27,11 @@ final class Request
 
     public function input(): Channel
     {
-        return $this->input;
+        return Channel::open($this->input);
     }
 
     public function output(): Channel
     {
-        return $this->output;
+        return Channel::open($this->output);
     }
 }
