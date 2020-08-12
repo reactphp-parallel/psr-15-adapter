@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ReactParallel\Psr15Adapter;
 
 use Psr\Http\Message\ResponseInterface;
-use ReactParallel\Pool\Worker\Result;
+use ReactParallel\Pool\Worker\Work\Result;
 
 final class Response implements Result
 {

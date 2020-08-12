@@ -8,36 +8,29 @@ use parallel\Channel;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
-use React\EventLoop\LoopInterface;
 use React\Promise\Promise;
 use React\Promise\PromiseInterface;
-use ReactParallel\Contracts\LowLevelPoolInterface;
-use ReactParallel\EventLoop\EventLoopBridge;
+use ReactParallel\Factory;
 use ReactParallel\Pool\Worker\Worker as WorkerPool;
-use ReactParallel\Streams\Factory;
+use ReactParallel\Streams\Factory as StreamFactory;
 
 use function Opis\Closure\serialize;
 use function Opis\Closure\unserialize;
 
 final class ReactMiddleware
 {
-    private Factory $streamFactory;
+    private StreamFactory $streamFactory;
 
     private WorkerPool $workerPool;
 
     public function __construct(
-        LoopInterface $loop,
-        EventLoopBridge $eventLoopBridge,
-        Factory $streamFactory,
-        LowLevelPoolInterface $pool,
+        Factory $factory,
         MiddlewareInterface ...$middleware
     ) {
-        $this->streamFactory = $streamFactory;
+        $this->streamFactory = $factory->streams();
         $this->workerPool    = new WorkerPool(
-            $loop,
-            $eventLoopBridge,
-            $pool,
-            new WorkerFactory(
+            $factory,
+            new HandlerFactory(
                 ...$middleware
             ),
             (int) '13'
@@ -59,7 +52,7 @@ final class ReactMiddleware
             }, $reject);
 
             /** @psalm-suppress UndefinedInterfaceMethod */
-            $this->workerPool->perform(new Work(new Request($request, $input, $output)))->then($resolve, $reject)->always(static function () use ($input, $output): void {
+            $this->workerPool->perform(new WorkRequest(new Request($request, $input, $output)))->then($resolve, $reject)->always(static function () use ($input, $output): void {
                 $input->close();
                 $output->close();
             });
