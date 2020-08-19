@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace ReactParallel\Psr15Adapter;
 
-use ReactParallel\Pool\Worker\Work as WorkContract;
+use ReactParallel\Pool\Worker\Work\Work;
 
-final class Work implements WorkContract
+final class WorkRequest implements Work
 {
     private Request $request;
 

@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace ReactParallel\Psr15Adapter;
 
 use Psr\Http\Server\MiddlewareInterface;
-use ReactParallel\Pool\Worker\Work\Worker as WorkerContract;
-use ReactParallel\Pool\Worker\Work\WorkerFactory as WorkerFactoryContract;
+use ReactParallel\Pool\Worker\Work\WorkerFactory;
 
 use function Opis\Closure\serialize;
 use function Opis\Closure\unserialize;
 
-final class WorkerFactory implements WorkerFactoryContract
+/**
+ * @implements WorkerFactory<WorkRequest, Handler>
+ */
+final class HandlerFactory implements WorkerFactory
 {
     private string $middleware;
 
@@ -20,8 +22,11 @@ final class WorkerFactory implements WorkerFactoryContract
         $this->middleware = serialize($middleware);
     }
 
-    public function construct(): WorkerContract
+    /**
+     * @psalm-suppress ImplementedReturnTypeMismatch
+     */
+    public function construct(): Handler
     {
-        return new Worker(...unserialize($this->middleware));
+        return new Handler(...unserialize($this->middleware));
     }
 }

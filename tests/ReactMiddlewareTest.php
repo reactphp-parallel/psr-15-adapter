@@ -8,11 +8,11 @@ use Ancarda\Psr7\StringStream\ReadOnlyStringStream;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use React\EventLoop\Factory;
+use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
 use ReactParallel\EventLoop\EventLoopBridge;
 use ReactParallel\Pool\Infinite\Infinite;
 use ReactParallel\Psr15Adapter\ReactMiddleware;
-use ReactParallel\Streams\Factory as StreamFactory;
 use RingCentral\Psr7\Response;
 use RingCentral\Psr7\ServerRequest;
 use WyriHaximus\AsyncTestUtilities\AsyncTestCase;
@@ -41,7 +41,7 @@ final class ReactMiddlewareTest extends AsyncTestCase
         $pool            = new Infinite($loop, $eventLoopBridge, 10);
         $stub            = new Psr15MiddlewareStub();
         $anotherStub     = new AnotherPsr15MiddlewareStub();
-        $middleware      = new ReactMiddleware($loop, $eventLoopBridge, new StreamFactory($eventLoopBridge), $pool, $stub, $stub, $anotherStub);
+        $middleware      = new ReactMiddleware(new \ReactParallel\Factory($loop), $stub, $stub, $anotherStub);
         $request         = new ServerRequest('GET', 'https://example.com/');
         $request         = $request->withAttribute('body', $rnd);
 
@@ -53,31 +53,17 @@ final class ReactMiddlewareTest extends AsyncTestCase
             Info::SIZE  => 0,
         ], iterator_to_array($pool->info()));
 
-        $promise = $middleware(
-            $request,
-            static function (ServerRequestInterface $request): PromiseInterface {
-                return resolve(new Response(666, [], new ReadOnlyStringStream($request->getAttribute('body'))));
-            }
-        );
-
-        self::assertSame([
-            Info::TOTAL => 1,
-            Info::BUSY => 1,
-            Info::CALLS => 0,
-            Info::IDLE  => 0,
-            Info::SIZE  => 1,
-        ], iterator_to_array($pool->info()));
-
-        $response = $this->await($promise, $loop, 9.9);
+        $deferred = new Deferred();
+        $loop->futureTick(static function () use ($deferred, $middleware, $request): void {
+            $deferred->resolve($middleware(
+                $request,
+                static function (ServerRequestInterface $request): PromiseInterface {
+                    return resolve(new Response(666, [], new ReadOnlyStringStream($request->getAttribute('body'))));
+                }
+            ));
+        });
+        $response = $this->await($deferred->promise(), $loop, 9.9);
         assert($response instanceof ResponseInterface);
-
-        self::assertSame([
-            Info::TOTAL => 1,
-            Info::BUSY => 1,
-            Info::CALLS => 0,
-            Info::IDLE  => 0,
-            Info::SIZE  => 1,
-        ], iterator_to_array($pool->info()));
 
         self::assertSame(666, $response->getStatusCode());
         self::assertSame($rnd, $response->getBody()->getContents());
