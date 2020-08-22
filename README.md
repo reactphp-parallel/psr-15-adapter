@@ -23,14 +23,19 @@ The middleware adapter accepts any PSR-15 middleware instance that meets for fol
 * Doesn't have internal state or relies on external state
 
 ```php
+use ReactParallel\Factory as ParallelFactory;
+
 $loop = Factory::create();
-$pool = new Infinite($loop, 10);
-$eventLoopBridge = new EventLoopBridge($loop);
-$streamFactory = new StreamFactory($eventLoopBridge);
+$factory = new ParallelFactory($loop);
 $psr15Middleware = new ThePsr15MiddlewareOfYourChoice();
+$otherPsr15Middleware = new TheOtherPsr15MiddlewareOfYourChoice();
 $server = new React\Http\Server(
     $loop,
-    new ReactMiddleware($streamFactory, $pool, $psr15Middleware, $loop, $eventLoopBridge)
+    new ReactMiddleware(
+        $factory, 
+        $psr15Middleware, 
+        $otherPsr15Middleware
+    )
 );
 ```
 
