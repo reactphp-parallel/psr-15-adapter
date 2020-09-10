@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ReactParallel\Psr15Adapter;
 
+use Ancarda\Psr7\StringStream\ReadOnlyStringStream;
 use parallel\Channel;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -39,6 +40,8 @@ final class ReactMiddleware
 
     public function __invoke(ServerRequestInterface $request, callable $next): PromiseInterface
     {
+        $request = $request->withBody(new ReadOnlyStringStream((string) $request->getBody()));
+
         return new Promise(function (callable $resolve, callable $reject) use ($request, $next): void {
             $input  = new Channel(Channel::Infinite);
             $output = new Channel(Channel::Infinite);
@@ -46,7 +49,7 @@ final class ReactMiddleware
             $this->streamFactory->single($output)->then(static function (string $request): ServerRequestInterface {
                 return unserialize($request);
             }, $reject)->then($next)->then(static function (ResponseInterface $response): string {
-                return serialize($response);
+                return serialize($response->withBody(new ReadOnlyStringStream((string) $response->getBody())));
             }, $reject)->then(static function (string $response) use ($input): void {
                 $input->send($response);
             }, $reject);
